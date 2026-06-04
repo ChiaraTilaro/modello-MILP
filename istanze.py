@@ -6,7 +6,7 @@ import json
 
 
 
-def scrivi_istanze(nome_file , dati):
+def scrivi_istanze(nome_file , risultati):
     with open(nome_file, "w", newline="") as f:
         writer = csv.writer(f)
 
@@ -20,7 +20,6 @@ def scrivi_istanze(nome_file , dati):
                 f,
                 json.dumps(p)
             ])
-
 def leggi_istanza(nome_file):
 
     dati = []

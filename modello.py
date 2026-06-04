@@ -1,6 +1,10 @@
+import os
+import time
+
 from mip import Model, xsum, BINARY, minimize, CONTINUOUS, OptimizationStatus
 from itertools import product
 from istanze import leggi_istanza
+from risultati import genera_file_risultati
 
 
 def modello(n_real , m , g , tempi_processamento):
@@ -82,7 +86,10 @@ def modello(n_real , m , g , tempi_processamento):
 
     # --- SOLUZIONE ---
     model.verbose = 0
+
+    start = time.time()
     status = model.optimize(max_seconds=300)
+    tempo_esecuzione = time.time() - start
 
     print("==============================================================")
     print(f"STATO OTTIMIZZAZIONE: {status}")
@@ -90,6 +97,8 @@ def modello(n_real , m , g , tempi_processamento):
 
     if status == OptimizationStatus.OPTIMAL or status == OptimizationStatus.FEASIBLE:
         print(f"MAKESPAN TOTALE (Cmax): {model.objective_value}\n")
+
+        cmax = model.objective_value
 
         for f in fabbriche:
             print(f"--- FABBRICA {f} ---")
@@ -102,6 +111,7 @@ def modello(n_real , m , g , tempi_processamento):
                     break
                 curr = prossimo[0]
                 sequenza.append(curr)
+
 
             if not sequenza:
                 print("Nessun job assegnato.")
@@ -126,18 +136,40 @@ def modello(n_real , m , g , tempi_processamento):
 
     else:
         print("Nessuna soluzione trovata.")
+    return cmax , tempo_esecuzione , str(status)
 
 if __name__ == "__main__":
     nome_file = "istanze/istanze.csv"
     dati = leggi_istanza(nome_file)
+
+    risultati = []
+    cartella = "risultati"
+    os.makedirs(cartella, exist_ok=True)
+
     max = 2
     i = 0
     for istanza in dati:
         print(f"==============================================================")
         print(f"ISTANZA {i+1}")
-        modello(istanza[0], istanza[1], istanza[2] , istanza[3])
+        cmax , tempo_esec , status = modello(istanza[0], istanza[1], istanza[2] , istanza[3])
         i +=1
         print(f"==============================================================")
+        risultati.append((istanza[0] , istanza[1], istanza[2] , istanza[3] , cmax , tempo_esec , status))
+        genera_file_risultati(f"{cartella}/risultati.csv",risultati)
         if i >=max:
             break
+
+    #n = 6 # numero di job (5 job + 1 dummy job)
+    #jobs = range(n)
+    #real_n = range(1 , n)
+   # m = 2 # numero di macchine
+    #g = 2 # numero di fabbriche
+    #P = [[10 , 5], [6 , 7], [8 , 4] , [9 , 6], [3 , 11]] # tempi di processamento di esempio
+
+
+
+
+
+
+
 
