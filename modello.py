@@ -146,7 +146,7 @@ if __name__ == "__main__":
     cartella = "risultati"
     os.makedirs(cartella, exist_ok=True)
 
-    max = 2
+    #max = 2
     i = 0
     for istanza in dati:
         print(f"==============================================================")
@@ -156,8 +156,8 @@ if __name__ == "__main__":
         print(f"==============================================================")
         risultati.append((istanza[0] , istanza[1], istanza[2] , istanza[3] , cmax , tempo_esec , status))
         genera_file_risultati(f"{cartella}/risultati.csv",risultati)
-        if i >=max:
-            break
+        #if i >=max:
+            #break
 
     #n = 6 # numero di job (5 job + 1 dummy job)
     #jobs = range(n)
